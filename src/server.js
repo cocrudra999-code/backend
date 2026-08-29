@@ -7,12 +7,35 @@ import seoRoutes from './routes/seoRoutes.js';
 
 const app = express();
 
-// ─── Security ──────────────────────────────────────────
+// ─── Security & CORS ──────────────────────────────────
 app.use(helmet());
-app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000'],
-  methods: ['POST'],
-}));
+
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  process.env.FRONTEND_URL,
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, or server-to-server)
+      if (!origin) return callback(null, true);
+      // Allow localhost and specified frontend URLs
+      if (
+        allowedOrigins.includes(origin) ||
+        origin.endsWith('.vercel.app') ||
+        origin.endsWith('.netlify.app')
+      ) {
+        return callback(null, true);
+      }
+      return callback(null, true); // Allow live frontend access
+    },
+    methods: ['GET', 'POST', 'OPTIONS'],
+    credentials: true,
+  })
+);
 
 // ─── Rate Limiting ─────────────────────────────────────
 const limiter = rateLimit({
