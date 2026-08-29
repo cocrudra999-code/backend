@@ -50,11 +50,21 @@ app.use(express.json({ limit: '1mb' }));
 
 // ─── Routes ────────────────────────────────────────────
 app.use('/api/seo', seoRoutes);
+app.use('/seo', seoRoutes);
 
-// ─── Health Check ──────────────────────────────────────
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
+// ─── Health & Root Check ───────────────────────────────
+const healthCheck = (req, res) => {
+  res.json({
+    status: 'ok',
+    service: 'YouTube SEO Generator Backend',
+    timestamp: new Date().toISOString(),
+  });
+};
+
+app.get('/api/health', healthCheck);
+app.get('/health', healthCheck);
+app.get('/api', healthCheck);
+app.get('/', healthCheck);
 
 // ─── 404 Handler ───────────────────────────────────────
 app.use((req, res) => {
