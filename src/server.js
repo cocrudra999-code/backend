@@ -67,12 +67,17 @@ app.use((err, req, res, _next) => {
   res.status(500).json({ success: false, error: 'Internal server error.' });
 });
 
-// ─── Start Server ──────────────────────────────────────
-app.listen(config.port, () => {
-  console.log(`\n🚀 YouTube SEO Generator Backend`);
-  console.log(`   Running on http://localhost:${config.port}`);
-  console.log(`   Endpoints:`);
-  console.log(`     POST /api/seo/youtube`);
-  console.log(`     POST /api/seo/script`);
-  console.log(`     GET  /api/health\n`);
-});
+// ─── Export App for Vercel Serverless ──────────────────
+export default app;
+
+// ─── Start Server Locally Only ─────────────────────────
+if (!process.env.VERCEL) {
+  app.listen(config.port, () => {
+    console.log(`\n🚀 YouTube SEO Generator Backend`);
+    console.log(`   Running on http://localhost:${config.port}`);
+    console.log(`   Endpoints:`);
+    console.log(`     POST /api/seo/youtube`);
+    console.log(`     POST /api/seo/script`);
+    console.log(`     GET  /api/health\n`);
+  });
+}
